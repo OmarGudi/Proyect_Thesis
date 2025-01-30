@@ -3,12 +3,17 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 def make_coordinates(image, line_parameters):
-    slope, intercept = line_parameters
+    if isinstance(line_parameters, np.ndarray) and line_parameters.shape == (2,):
+        slope, intercept = line_parameters
+    else:
+        raise ValueError(f"Expected iterable with 2 values, got {type(line_parameters)}: {line_parameters}")
+
     y1 = image.shape[0]
-    y2 = int(y1*(3/5))
-    x1 = int((y1 - intercept)/slope)
-    x2 = int((y2 - intercept)/slope)
+    y2 = int(y1 * (3 / 5))
+    x1 = int((y1 - intercept) / slope)
+    x2 = int((y2 - intercept) / slope)
     return np.array([x1, y1, x2, y2])
+
 
 def average_slop_intercept(image, lines):
     left_fit = []
