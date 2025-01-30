@@ -58,6 +58,8 @@ def ROI(image):
     masked_image = cv2.bitwise_and(image, mask)
     return masked_image
 
+'''
+#This is to be used with an image
 #Convert out example image to gray scale using opencv
 image = cv2.imread(r'/home/omargudino/Documents/Proyect_Thesis/Detect_Lines/Finding_Lane_Lines/test_image.jpg')
 lane_image = np.copy(image)
@@ -70,7 +72,24 @@ combo_image = cv2.addWeighted(lane_image, 0.8, line_image, 1, 1)
 #Showing results
 cv2.imshow('Line Image', combo_image)
 cv2.waitKey(0)
+'''
 
+#This is to be used with a video
+cap = cv2.VideoCapture(r'/home/omargudino/Documents/Proyect_Thesis/Detect_Lines/Finding_Lane_Lines/test2.mp4')
+while((cap.isOpened())):
+    _, frame =  cap.read()
+    canny_image = canny(frame)
+    cropped_image = ROI(canny_image)
+    lines = cv2.HoughLinesP(cropped_image, 1, np.pi/180, 100, np.array([]), minLineLength=40, maxLineGap=5)
+    average_lines = average_slop_intercept(frame, lines)
+    line_image = display_lines(frame, average_lines)
+    combo_image = cv2.addWeighted(frame, 0.8, line_image, 1, 1)
+    #Showing results
+    cv2.imshow('Line Image', combo_image)
+    if cv2.waitKey(10) == ord('e'):
+        break
+cap.release()
+cv2.destroyAllWindows()
 #plt.imshow(canny)
 #plt.show()
 
