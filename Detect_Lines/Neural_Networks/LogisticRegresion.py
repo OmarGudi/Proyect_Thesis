@@ -17,7 +17,7 @@ def calculate_error(line_parameters, points, y):
 
 def gradient_descent(line_parameters, points, y, alpha):
     m = points.shape[0]
-    cycles = 1000
+    cycles = 2000
     aux = 0
     for i in range(cycles):
         p = sigmoid(points*line_parameters)
