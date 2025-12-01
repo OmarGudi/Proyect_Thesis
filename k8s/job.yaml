@@ -1,0 +1,30 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: thesis-metrics-job
+spec:
+  template:
+    spec:
+      containers:
+      - name: thesis-app
+        image: ghcr.io/omargudi/proyect_thesis:latest
+        command: ["python", "-m", "app.main"]
+        env:
+        - name: ANALYSIS_PATH
+          value: "/data/Detect_Lines"
+        volumeMounts:
+        - name: data-volume
+          mountPath: /data
+        - name: output-volume
+          mountPath: /output
+      volumes:
+      - name: data-volume
+        hostPath:
+          path: /c/Users/omarg/OneDrive/Documentos/Proyect_Thesis
+          type: Directory
+      - name: output-volume
+        hostPath:
+          path: /c/Users/omarg/OneDrive/Documentos/Proyect_Thesis/output
+          type: DirectoryOrCreate
+      restartPolicy: Never
+  backoffLimit: 2

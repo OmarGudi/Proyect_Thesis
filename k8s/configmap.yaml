@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: thesis-config
+data:
+  ANALYSIS_PATH: "C:\\Users\\omarg\\OneDrive\\Documentos\\Proyect_Thesis\\Detect_Lines"
+  OUTPUT_DIR: "/output"

@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: thesis-metrics-app
+  labels:
+    app: thesis-metrics
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: thesis-metrics
+  template:
+    metadata:
+      labels:
+        app: thesis-metrics
+    spec:
+      containers:
+      - name: thesis-app
+        image: ghcr.io/omargudi/proyect_thesis:latest
+        env:
+        - name: ANALYSIS_PATH
+          value: "/data/Detect_Lines"
+        volumeMounts:
+        - name: output-volume
+          mountPath: /output
+        - name: data-volume
+          mountPath: /data
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+      volumes:
+      - name: output-volume
+        emptyDir: {}
+      - name: data-volume
+        hostPath:
+          path: /c/Users/omarg/OneDrive/Documentos/Proyect_Thesis
+          type: Directory
