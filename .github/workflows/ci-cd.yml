@@ -3,8 +3,6 @@ name: Thesis Metrics CI/CD
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
 
 env:
   REGISTRY: ghcr.io
@@ -49,7 +47,7 @@ jobs:
       with:
         registry: ${{ env.REGISTRY }}
         username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+        password: ${{ secrets.GHCR_TOKEN }}
     
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
@@ -62,9 +60,28 @@ jobs:
         cache-from: type=gha
         cache-to: type=gha,mode=max
     
-    - name: Deploy to Minikube simulation
+    - name: Verify image pushed
       run: |
-        echo "Image built and pushed successfully"
-        echo "To deploy to Minikube:"
-        echo "kubectl apply -f k8s/"
+        echo "Image successfully pushed to GHCR"
         echo "Image: ${{ env.IMAGE_NAME }}:latest"
+
+  deploy-to-minikube:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Minikube
+      uses: medyagh/setup-minikube@master
+      with:
+        driver: docker
+    
+    - name: Deploy to Minikube
+      run: |
+        kubectl apply -f k8s/job.yaml
+        kubectl wait --for=condition=complete job/thesis-metrics-job --timeout=300s
+    
+    - name: Get results
+      run: |
+        kubectl logs -l job-name=thesis-metrics-job
