@@ -12,19 +12,13 @@ spec:
         env:
         - name: ANALYSIS_PATH
           value: "/data/Detect_Lines"
+        - name: OUTPUT_DIR
+          value: "/output"
         volumeMounts:
-        - name: data-volume
-          mountPath: /data
         - name: output-volume
           mountPath: /output
       volumes:
-      - name: data-volume
-        hostPath:
-          path: /c/Users/omarg/OneDrive/Documentos/Proyect_Thesis
-          type: Directory
       - name: output-volume
-        hostPath:
-          path: /c/Users/omarg/OneDrive/Documentos/Proyect_Thesis/output
-          type: DirectoryOrCreate
+        emptyDir: {}
       restartPolicy: Never
   backoffLimit: 2

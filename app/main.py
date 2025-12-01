@@ -5,8 +5,9 @@ from app.file_analyzer import FileAnalyzer
 from app.metrics_calculator import MetricsCalculator
 
 class ThesisMetricsApp:
-    def __init__(self, base_path):
-        self.base_path = base_path
+    def __init__(self):
+        # Usar variable de entorno o path por defecto
+        self.base_path = os.getenv('ANALYSIS_PATH', '/data/Detect_Lines')
         self.analyzer = FileAnalyzer()
         self.metrics_calc = MetricsCalculator()
     
@@ -15,6 +16,13 @@ class ThesisMetricsApp:
         
         if not os.path.exists(self.base_path):
             print(f"Error: El directorio {self.base_path} no existe")
+            print("Directorios disponibles:")
+            for root, dirs, files in os.walk('/'):
+                print(f"  {root}")
+                if len(dirs) > 0:
+                    for d in dirs[:5]:  # Mostrar solo primeros 5
+                        print(f"    - {d}")
+                break  # Solo mostrar root
             return None
         
         file_metrics = self.analyzer.analyze_directory(self.base_path)
@@ -33,7 +41,7 @@ class ThesisMetricsApp:
         return results
     
     def save_results(self, results):
-        output_dir = "output"
+        output_dir = os.getenv('OUTPUT_DIR', '/output')
         os.makedirs(output_dir, exist_ok=True)
         
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -54,10 +62,9 @@ class ThesisMetricsApp:
         for file_type, count in summary['files_by_type'].items():
             print(f"  {file_type}: {count}")
         print(f"Tamaño total: {summary['total_size_mb']:.2f} MB")
-        print(f"Archivo mas grande: {summary['largest_file']}")
-        print(f"Archivo con mas lineas: {summary['file_with_most_lines']}")
+        print(f"Archivo mas grande: {summary['largest_file']['path']}")
+        print(f"Archivo con mas lineas: {summary['file_with_most_lines']['path']}")
 
 if __name__ == "__main__":
-    base_path = r"C:\Users\omarg\OneDrive\Documentos\Proyect_Thesis\Detect_Lines"
-    app = ThesisMetricsApp(base_path)
+    app = ThesisMetricsApp()
     app.run_analysis()
